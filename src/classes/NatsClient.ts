@@ -58,7 +58,7 @@ export interface INatsClientOptions {
  *
  * @returns {INatsClientOptions} The options.
  */
-export const defaultGetNatsOptions: GetNatsClientOptions = () => {
+export const defaultGetNatsClientOptions: GetNatsClientOptions = () => {
     const NATS_CLUSTER_ID = process.env.NATS_CLUSTER_ID!.trim();
     const NATS_URL = process.env.NATS_URL?.trim();
     const POD_NAME = process.env.POD_NAME!.trim();
@@ -250,7 +250,7 @@ export class NatsClient {
 /**
  * A default NATS client instance, that can be used in a Kubernetes Pod e.g.
  */
-export const stan = new NatsClient(defaultGetNatsOptions);
+export const stan = new NatsClient(defaultGetNatsClientOptions);
 
 export type {
     Stan
