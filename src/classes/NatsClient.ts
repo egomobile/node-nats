@@ -71,19 +71,22 @@ export const defaultGetNatsOptions: GetNatsClientOptions = () => {
 };
 
 /**
-  * A simple NATS client.
-  *
-  * @example
-  * ```
-  * import { stan } from '@egomobile/nats'
-  *
-  * // connect to server
-  * await stan.connect()
-  * // close connection, when process exists
-  * // this is very useful in Kubernetes PODs
-  * stan.exitOnClose()
-  * ```
-  */
+ * A simple NATS client.
+ *
+ * @example
+ * ```
+ * import { stan } from '@egomobile/nats'
+ *
+ * // connect to server
+ * await stan.connect()
+ *
+ * // close connection, when process exits
+ * // --or-- exit process, when connection collapses
+ * //
+ * // this is very useful in Kubernetes PODs
+ * stan.exitOnClose()
+ * ```
+ */
 export class NatsClient {
     private _client: Nilable<Stan>;
 
@@ -108,10 +111,10 @@ export class NatsClient {
     }
 
     /**
-      * Gets the underlying basic client.
-      *
-      * @returns {Stan} The NATS client.
-      */
+     * Gets the underlying basic client.
+     *
+     * @returns {Stan} The NATS client.
+     */
     public get client(): Stan {
         if (!this._client) {
             throw new Error('Client not connected');
@@ -121,18 +124,34 @@ export class NatsClient {
     }
 
     /**
-      * Starts a new connection to a NATS server.
-      *
-      * @example
-      * ```
-      * import { stan } from '@egomobile/nats'
-      *
-      * // connect to server
-      * await stan.connect()
-      * ```
-      *
-      * @returns {Promise<Stan>} The promise with the base client.
-      */
+     * Closes the connection to server.
+     *
+     * @returns {boolean} Connection has been closed or not.
+     */
+    public close(): boolean {
+        if (this._client) {
+            this._client.close();
+            this._client = null;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Starts a new connection to a NATS server.
+     *
+     * @example
+     * ```
+     * import { stan } from '@egomobile/nats'
+     *
+     * // connect to server
+     * await stan.connect()
+     * ```
+     *
+     * @returns {Promise<Stan>} The promise with the base client.
+     */
     public connect(): Promise<Stan> {
         return new Promise<Stan>(async (resolve, reject) => {
             try {
@@ -170,20 +189,31 @@ export class NatsClient {
     }
 
     /**
-      * Registers the process events to close the client on exit.
-      *
-      * @example
-      * ```
-      * import { stan } from '@egomobile/nats'
-      *
-      * // connect to server
-      * await stan.connect()
-      * // close connection, when process exists
-      * // this is very useful in Kubernetes PODs
-      * stan.exitOnClose()
-      * ```
-      */
-    public exitOnClose() {
+     * Registers the process events to close the client on exit.
+     *
+     * @param {number} exitCode The custom exit code.
+     *
+     * @returns {this} This instance.
+     *
+     * @example
+     * ```
+     * import { stan } from '@egomobile/nats'
+     *
+     * // connect to server
+     * await stan.connect()
+     *
+     * // close connection, when process exits
+     * // --or-- exit process, when connection collapses
+     * //
+     * // this is very useful in Kubernetes PODs
+     * stan.exitOnClose()
+     * ```
+     */
+    public exitOnClose(exitCode = 2): this {
+        if (typeof exitCode !== 'number') {
+            throw new TypeError('exitCode must be of a number');
+        }
+
         // close process, if connection to NATS
         // is terminated
         this.client.once('close', () => process.exit());
@@ -193,12 +223,14 @@ export class NatsClient {
         process.once('SIGINT', () => this.tryClose());
         process.once('SIGUSR1', () => this.tryClose());
         process.once('SIGUSR2', () => this.tryClose());
-        process.once('uncaughtException', (err) => {
-            process.exitCode = 2;
-            console.error(err);
+        process.once('uncaughtException', (error) => {
+            process.exitCode = exitCode;
+            console.error('[ERROR]', '@egomobile/nats', error);
 
             this.tryClose();
         });
+
+        return this;
     }
 
     /**
@@ -208,16 +240,16 @@ export class NatsClient {
 
     private tryClose() {
         try {
-            this._client?.close();
-        } catch (e) {
-            console.warn(e);
+            this.close();
+        } catch (error) {
+            console.warn('[WARN]', '@egomobile/nats', error);
         }
     }
 }
 
 /**
-  * A default NATS client instance, that can be used in a Kubernetes Pod e.g.
-  */
+ * A default NATS client instance, that can be used in a Kubernetes Pod e.g.
+ */
 export const stan = new NatsClient(defaultGetNatsOptions);
 
 export type {

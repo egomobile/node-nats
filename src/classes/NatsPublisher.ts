@@ -47,32 +47,32 @@ export const defaultGetNatsPublisherOptions: GetNatsPublisherOptions = () => ({
 });
 
 /**
-  * A basic NATS event publisher.
-  *
-  * @example
-  * ```
-  * import { NatsPublisher } from '@egomobile/nats'
-  *
-  * interface IMyEvent {
-  *   foo: string;
-  *   baz?: number;
-  * }
-  *
-  * const myPublisher = new NatsPublisher<IMyEvent>()
-  *
-  * await myPublisher.publish({
-  *   foo: 'bar',
-  *   baz: 5979
-  * })
-  * ```
-  */
+ * A basic NATS event publisher.
+ *
+ * @example
+ * ```
+ * import { NatsPublisher } from '@egomobile/nats'
+ *
+ * interface IMyEvent {
+ *   foo: string;
+ *   baz?: number;
+ * }
+ *
+ * const myPublisher = new NatsPublisher<IMyEvent>()
+ *
+ * await myPublisher.publish({
+ *   foo: 'bar',
+ *   baz: 5979
+ * })
+ * ```
+ */
 export class NatsPublisher<TEvent extends any = any> {
     /**
-      * Initializes a new instance of that class.
-      *
-      * @param {string} subject The subject.
-      * @param {INatsListenerOptions|GetNatsListenerOptions} [optionsOrFunction] Custom options or a function that provides it.
-      */
+     * Initializes a new instance of that class.
+     *
+     * @param {string} subject The subject.
+     * @param {INatsListenerOptions|GetNatsListenerOptions} [optionsOrFunction] Custom options or a function that provides it.
+     */
     public constructor(
         public readonly subject: string,
         public readonly optionsOrFunction: INatsPublisherOptions | GetNatsPublisherOptions = defaultGetNatsPublisherOptions
@@ -99,29 +99,29 @@ export class NatsPublisher<TEvent extends any = any> {
     public readonly client: NatsClient;
 
     /**
-      * Publishes data.
-      *
-      * @param {TEvent} data The data to publish.
-      *
-      * @example
-      * ```
-      * import { NatsPublisher } from '@egomobile/nats'
-      *
-      * interface IMyEvent {
-      *   foo: string;
-      *   baz?: number;
-      * }
-      *
-      * const myPublisher = new NatsPublisher<IMyEvent>()
-      *
-      * await myPublisher.publish({
-      *   foo: 'bar',
-      *   baz: 5979
-      * })
-      * ```
-      *
-      * @returns {Promise<void>} The promise.
-      */
+     * Publishes data.
+     *
+     * @param {TEvent} data The data to publish.
+     *
+     * @example
+     * ```
+     * import { NatsPublisher } from '@egomobile/nats'
+     *
+     * interface IMyEvent {
+     *   foo: string;
+     *   baz?: number;
+     * }
+     *
+     * const myPublisher = new NatsPublisher<IMyEvent>()
+     *
+     * await myPublisher.publish({
+     *   foo: 'bar',
+     *   baz: 5979
+     * })
+     * ```
+     *
+     * @returns {Promise<void>} The promise.
+     */
     public publish(data: TEvent): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             try {
@@ -139,10 +139,10 @@ export class NatsPublisher<TEvent extends any = any> {
     }
 
     /**
-      * Gets the underlying raw client.
-      *
-      * @returns {Stan} The client.
-      */
+     * Gets the underlying raw client.
+     *
+     * @returns {Stan} The client.
+     */
     public get stan(): Stan {
         return this.client.client;
     }

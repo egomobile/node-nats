@@ -93,7 +93,10 @@ export type SetupNatsListenerAction = (args: ISetupNatsListenerActionArguments) 
  * // connect to server
  * await stan.connect()
  *
- * // close connection, when process exists
+ * // close connection, when process exits
+ * // --or-- exit process, when connection collapses
+ * //
+ * // this is very useful in Kubernetes PODs
  * stan.exitOnClose()
  * ```
  *
@@ -150,7 +153,10 @@ export async function loadNatsListeners(options?: Nilable<ILoadNatsListenersOpti
  * // connect to server
  * await stan.connect()
  *
- * // close connection, when process exists
+ * // close connection, when process exits
+ * // --or-- exit process, when connection collapses
+ * //
+ * // this is very useful in Kubernetes PODs
  * stan.exitOnClose()
  * ```
  *

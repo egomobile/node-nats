@@ -30,24 +30,24 @@ import type { Nilable } from '../types';
 export type GetNatsListenerOptions = () => INatsListenerOptions;
 
 /**
-  * Context for an 'onMessage' event.
-  */
+ * Context for an 'onMessage' event.
+ */
 export interface INatsEventMessageHandlerContext<TEvent extends any = any> {
     /**
-      * The function to call, if message should be ack.
-      */
+     * The function to call, if message should be ack.
+     */
     ack: () => void;
     /**
-      * The parsed data.
-      */
+     * The parsed data.
+     */
     message: TEvent;
     /**
-      * The function to call, if message should NOT be ack.
-      */
+     * The function to call, if message should NOT be ack.
+     */
     noAck: () => void;
     /**
-      * The raw NATS message.
-      */
+     * The raw NATS message.
+     */
     rawMessage: Message;
 }
 
@@ -74,10 +74,10 @@ export interface INatsListenerOptions {
 }
 
 /**
-  * Handles a message.
-  *
-  * @param {INatsEventMessageHandlerContext<TEvent>} context The context.
-  */
+ * Handles a message.
+ *
+ * @param {INatsEventMessageHandlerContext<TEvent>} context The context.
+ */
 export type OnNatsEventMessageHandler<TEvent extends any = any> =
     (context: INatsEventMessageHandlerContext<TEvent>) => Promise<void>;
 
@@ -97,34 +97,34 @@ export const defaultGetNatsListenerOptions: GetNatsListenerOptions = () => {
 };
 
 /**
-  * A NATS listener.
-  *
-  * @example
-  * ```
-  * import { NatsListener } from '@egomobile/nats'
-  *
-  * interface IMyEvent {
-  *   foo: string;
-  *   baz?: number;
-  * }
-  *
-  * const myListener = new NatsListener<IMyEvent>('myEvent')
-  *
-  * myListener.onMessage = async ({ message }) => {
-  * }
-  *
-  * myListener.listen()
-  * ```
-  */
+ * A NATS listener.
+ *
+ * @example
+ * ```
+ * import { NatsListener } from '@egomobile/nats'
+ *
+ * interface IMyEvent {
+ *   foo: string;
+ *   baz?: number;
+ * }
+ *
+ * const myListener = new NatsListener<IMyEvent>('myEvent')
+ *
+ * myListener.onMessage = async ({ message }) => {
+ * }
+ *
+ * myListener.listen()
+ * ```
+ */
 export class NatsListener<TEvent extends any = any> {
     private _queue: Nilable<PQueue>;
 
     /**
-      * Initializes a new instance of that class.
-      *
-      * @param {string} subject The subject / topic.
-      * @param {INatsListenerOptions|GetNatsListenerOptions} [optionsOrFunction] Custom options or a function that provides it.
-      */
+     * Initializes a new instance of that class.
+     *
+     * @param {string} subject The subject / topic.
+     * @param {INatsListenerOptions|GetNatsListenerOptions} [optionsOrFunction] Custom options or a function that provides it.
+     */
     public constructor(
         public readonly subject: string,
         public readonly optionsOrFunction: INatsListenerOptions | GetNatsListenerOptions = defaultGetNatsListenerOptions
@@ -164,8 +164,8 @@ export class NatsListener<TEvent extends any = any> {
     }
 
     /**
-      * Do an automatic ack on each message event or not.
-      */
+     * Do an automatic ack on each message event or not.
+     */
     public autoAck: boolean;
 
     /**
@@ -188,15 +188,15 @@ export class NatsListener<TEvent extends any = any> {
     }
 
     /**
-      * The NATS group.
-      */
+     * The NATS group.
+     */
     public readonly groupName: string;
 
     /**
-      * Internal NATS client message handler.
-      *
-      * @param {Message} rawMessage The raw message.
-      */
+     * Internal NATS client message handler.
+     *
+     * @param {Message} rawMessage The raw message.
+     */
     protected handleSubscriptionMessage(rawMessage: Message): void {
         const tryAck = () => rawMessage.ack();
 
@@ -250,29 +250,29 @@ export class NatsListener<TEvent extends any = any> {
     }
 
     /**
-      * Initializes the subscription options.
-      *
-      * @example
-      * ```
-      * import { NatsListener, SubscriptionOptions } from '@egomobile/nats'
-      *
-      * interface IMyEvent {
-      *   foo: string;
-      *   baz?: number;
-      * }
-      *
-      * class MyEventListener extends NatsListener<IMyEvent> {
-      *   protected initSubscriptionOptions(options: SubscriptionOptions) {
-      *     options.setStartWithLastReceived()
-      *       .setManualAckMode(false)
-      *       .setAckWait(180 * 1000)
-      *       .setDurableName(this.groupName)
-      *   }
-      * }
-      * ```
-      *
-      * @param {SubscriptionOptions} options The "empty" options object.
-      */
+     * Initializes the subscription options.
+     *
+     * @example
+     * ```
+     * import { NatsListener, SubscriptionOptions } from '@egomobile/nats'
+     *
+     * interface IMyEvent {
+     *   foo: string;
+     *   baz?: number;
+     * }
+     *
+     * class MyEventListener extends NatsListener<IMyEvent> {
+     *   protected initSubscriptionOptions(options: SubscriptionOptions) {
+     *     options.setStartWithLastReceived()
+     *       .setManualAckMode(false)
+     *       .setAckWait(180 * 1000)
+     *       .setDurableName(this.groupName)
+     *   }
+     * }
+     * ```
+     *
+     * @param {SubscriptionOptions} options The "empty" options object.
+     */
     protected initSubscriptionOptions(options: SubscriptionOptions) {
         options.setDeliverAllAvailable()
             .setManualAckMode(true)
@@ -281,28 +281,28 @@ export class NatsListener<TEvent extends any = any> {
     }
 
     /**
-      * Start listening.
-      *
-      * @example
-      * ```
-      * import { NatsListener } from '@egomobile/nats'
-      *
-      * interface IMyEvent {
-      *   foo: string;
-      *   baz?: number;
-      * }
-      *
-      * const myListener = new NatsListener<IMyEvent>('myEvent')
-      *
-      * myListener.onMessage = async ({ message }) => {
-      *   // handle message
-      * }
-      *
-      * myListener.listen()
-      * ```
-      *
-      * @returns {Subscription} The new subscription.
-      */
+     * Start listening.
+     *
+     * @example
+     * ```
+     * import { NatsListener } from '@egomobile/nats'
+     *
+     * interface IMyEvent {
+     *   foo: string;
+     *   baz?: number;
+     * }
+     *
+     * const myListener = new NatsListener<IMyEvent>('myEvent')
+     *
+     * myListener.onMessage = async ({ message }) => {
+     *   // handle message
+     * }
+     *
+     * myListener.listen()
+     * ```
+     *
+     * @returns {Subscription} The new subscription.
+     */
     public listen(): Subscription {
         const subscription = this.stan.subscribe(
             this.subject,
@@ -316,45 +316,45 @@ export class NatsListener<TEvent extends any = any> {
     }
 
     /**
-      * Can be used to register a function, to receive event messages.
-      *
-      * @example
-      * ```
-      * const myListener = new NatsListener('myEvent')
-      *
-      * myListener.onMessage = async ({ message }) => {
-      *   // handle message
-      * }
-      * ```
-      */
+     * Can be used to register a function, to receive event messages.
+     *
+     * @example
+     * ```
+     * const myListener = new NatsListener('myEvent')
+     *
+     * myListener.onMessage = async ({ message }) => {
+     *   // handle message
+     * }
+     * ```
+     */
     public onMessage?: Nilable<OnNatsEventMessageHandler<TEvent>>;
 
     /**
-      * Gets the underlying basic NATS client.
-      *
-      * @returns {Stan} The underlying client.
-      */
+     * Gets the underlying basic NATS client.
+     *
+     * @returns {Stan} The underlying client.
+     */
     public get stan(): Stan {
         return this.client.client;
     }
 
     /**
-      * Sets up the size of an internal concurrency queue.
-      *
-      * @example
-      * ```
-      * import { NatsListener } from '@egomobile/nats'
-      *
-      * const myListener = new NatsListener()
-      *
-      * myListener.setQueueSize(1)  // handle only one message at once
-      * ```
-      *
-      * @param {number} concurrency The new size of the queue.
-      *                             If the value is not a valid number, the queue is deactivated.
-      *
-      * @returns {this} this
-      */
+     * Sets up the size of an internal concurrency queue.
+     *
+     * @example
+     * ```
+     * import { NatsListener } from '@egomobile/nats'
+     *
+     * const myListener = new NatsListener()
+     *
+     * myListener.setQueueSize(1)  // handle only one message at once
+     * ```
+     *
+     * @param {number} concurrency The new size of the queue.
+     *                             If the value is not a valid number, the queue is deactivated.
+     *
+     * @returns {this} this
+     */
     public setQueueSize(concurrency: Nilable<number>): this {
         if (concurrency !== null && typeof concurrency !== 'undefined') {
             if (typeof concurrency !== 'number') {
@@ -370,8 +370,8 @@ export class NatsListener<TEvent extends any = any> {
     }
 
     /**
-      * The subscription options.
-      */
+     * The subscription options.
+     */
     public readonly subscriptionOptions: SubscriptionOptions;
 }
 
