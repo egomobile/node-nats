@@ -56,7 +56,7 @@ main().error(console.error);
 A "listener" file, loaded by `loadNatsListeners()` function can look like that:
 
 ```typescript
-// file: listeners/foo.ts
+// file: listeners/foo_subject.ts
 
 import {
   ISetupNatsListenerActionArguments,
@@ -69,7 +69,7 @@ interface IFooEvent {
 }
 
 export default async ({ name, stan }: ISetupNatsListenerActionArguments) => {
-  // name === 'foo'
+  // name === 'foo_subject'
   // use it as subject for the listener
 
   const listener = new NatsListener<IFooEvent>(name, {
@@ -79,10 +79,27 @@ export default async ({ name, stan }: ISetupNatsListenerActionArguments) => {
     // handle 'message'
   };
 
-  return listener.listen(); // 'Subscription' instance should
+  // 'Subscription' instance should
   // be used as object / value that
   // represents the listener (connection)
+  return listener.listen();
 };
+```
+
+This example shows, how send / publish a `foo_subject` event from another client later, e.g.:
+
+```typescript
+import { NatsPublisher } from "@egomobile/nats";
+
+interface IFooEvent {
+  bar: string;
+  baz?: number;
+}
+
+await new NatsPublisher<IFooEvent>("foo_subject").publish({
+  bar: "Foo",
+  baz: 5979,
+});
 ```
 
 ## Documentation
