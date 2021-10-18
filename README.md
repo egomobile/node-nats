@@ -86,7 +86,7 @@ export default async ({ name, stan }: ISetupNatsListenerActionArguments) => {
 };
 ```
 
-This example shows, how send / publish a `foo_subject` event from another client later, e.g.:
+This example shows, how to send / publish a `foo_subject` event from another client later, e.g.:
 
 ```typescript
 import { NatsPublisher } from "@egomobile/nats";
