@@ -35,7 +35,7 @@ async function main() {
   // function
   //
   // s. below
-  subscriptions = loadNatsListeners({
+  subscriptions = await loadNatsListeners({
     dir: __dirname + "/listener",
     filter: ".ts",
   });
