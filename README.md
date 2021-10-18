@@ -17,7 +17,7 @@ npm install --save @egomobile/nats
 ## Usage
 
 ```typescript
-import { stan } from "@egomobile/nats";
+import { loadNatsListeners, stan } from "@egomobile/nats";
 
 // 'stan' configuration is setup
 // in following environment variables
@@ -26,7 +26,20 @@ import { stan } from "@egomobile/nats";
 // NATS_CLUSTER_ID => cluster ID
 // NATS_URL => (optional) URL to NATS server ... Default 'http://nats:4222'
 
+let subscriptions: any[] | undefined;
+
 async function main() {
+  // scan all .ts files in 'listeners' sub folder
+  // and execute all exported functions, which are
+  // exported by 'default' or directly as CommonJS
+  // function
+  //
+  // s. below
+  subscriptions = loadNatsListeners({
+    dir: __dirname + "/listener",
+    filter: ".ts",
+  });
+
   // connect to server
   await stan.connect();
 
@@ -36,6 +49,38 @@ async function main() {
 }
 
 main().error(console.error);
+```
+
+A "listener" file, loaded by `loadNatsListeners()` function can look like that:
+
+```typescript
+// file: listeners/foo.ts
+
+import {
+  ISetupNatsListenerActionArguments,
+  NatsListener,
+} from "@egomobile/nats";
+
+interface IFooEvent {
+  bar: string;
+  baz?: number;
+}
+
+export default async ({ name, stan }: ISetupNatsListenerActionArguments) => {
+  // name === 'foo'
+  // use it as subject for the listener
+
+  const listener = new NatsListener<IFooEvent>(name, {
+    client: stan,
+  });
+  listener.onMessage = async ({ message }) => {
+    // handle 'message'
+  };
+
+  return listener.listen(); // 'Subscription' instance should
+  // be used as object / value that
+  // represents the listener (connection)
+};
 ```
 
 ## Documentation
