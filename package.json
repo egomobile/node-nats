@@ -19,7 +19,6 @@
     },
     "keywords": [
         "node",
-        "api",
         "nats",
         "streaming",
         "client",
@@ -28,7 +27,7 @@
         "classes",
         "tools",
         "functions",
-        "types",
+        "typescript",
         "js",
         "ts",
         "javascript",
