@@ -86,7 +86,7 @@ export type SetupNatsListenerAction = (args: ISetupNatsListenerActionArguments) 
  * // exported by 'default' or directly as CommonJS
  * // function
  * const subscriptions: any[] = await loadNatsListeners({
- *   dir: __dirname + '/listener',
+ *   dir: __dirname + '/listeners',
  *   filter: '.ts'
  * })
  *
@@ -146,7 +146,7 @@ export async function loadNatsListeners(options?: Nilable<ILoadNatsListenersOpti
  * // exported by 'default' or directly as CommonJS
  * // function
  * const subscriptions: any[] = loadNatsListenersSync({
- *   dir: __dirname + '/listener',
+ *   dir: __dirname + '/listeners',
  *   filter: '.ts'
  * })
  *
