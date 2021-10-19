@@ -236,7 +236,7 @@ function loadModuleOfSetupAction(fullPath: string, stats: fs.Stats, filter: Load
         return; // no file
     }
 
-    const name = path.dirname(fullPath);
+    const name = path.basename(fullPath);
 
     if (!filter(name, fullPath)) {
         return;  // filter criteria does not match
@@ -246,7 +246,7 @@ function loadModuleOfSetupAction(fullPath: string, stats: fs.Stats, filter: Load
     const moduleOrFunction = require(fullPath);
 
     // first try 'default' export
-    let setupListener: SetupNatsListenerAction | null | undefined = require(fullPath).default;
+    let setupListener: SetupNatsListenerAction | null | undefined = moduleOrFunction.default;
     if (!setupListener) {
         setupListener = moduleOrFunction;  // now try CommonJS
     }
