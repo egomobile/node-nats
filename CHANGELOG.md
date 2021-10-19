@@ -1,6 +1,6 @@
 # Change Log (@egomobile/nats)
 
-## 0.2.0
+## 0.2.1
 
 - add `loadNatsListeners()` and `loadNatsListenersSync()` functions
 - add `exitCode` parameter to [exitOnClose()](https://egomobile.github.io/node-nats/classes/NatsClient.html#exitOnClose)

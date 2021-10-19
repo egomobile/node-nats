@@ -212,7 +212,9 @@ function getOptions(options: Nilable<ILoadNatsListenersOptions>) {
     let filter = options?.filter;
     if (filter) {
         if (typeof filter === 'string') {
-            filter = (f) => f.endsWith(filter as string);
+            const fileExt = filter;
+
+            filter = (f) => f.endsWith(fileExt);
         }
     } else {
         filter = (f) => f.endsWith('.js');
