@@ -1,6 +1,6 @@
 {
     "name": "@egomobile/nats",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Classes, functions and tools that help to connect and communicate to and with a NATS streaming server.",
     "main": "lib/index.js",
     "engines": {
@@ -19,7 +19,6 @@
     },
     "keywords": [
         "node",
-        "api",
         "nats",
         "streaming",
         "client",
@@ -28,7 +27,7 @@
         "classes",
         "tools",
         "functions",
-        "types",
+        "typescript",
         "js",
         "ts",
         "javascript",
