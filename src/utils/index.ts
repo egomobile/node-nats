@@ -81,14 +81,6 @@ export type SetupNatsListenerAction = (args: ISetupNatsListenerActionArguments) 
  * ```
  * import { stan } from "@egomobile/nats"
  *
- * // scan all .ts files in 'listeners' sub folder
- * // and execute all exported functions, which are
- * // exported by 'default' or directly as CommonJS
- * // function
- * const subscriptions: any[] = await loadNatsListeners({
- *   dir: __dirname + '/listeners',
- *   filter: '.ts'
- * })
  *
  * // connect to server
  * await stan.connect()
@@ -98,6 +90,15 @@ export type SetupNatsListenerAction = (args: ISetupNatsListenerActionArguments) 
  * //
  * // this is very useful in Kubernetes PODs
  * stan.exitOnClose()
+ *
+ * // scan all .ts files in 'listeners' sub folder
+ * // and execute all exported functions, which are
+ * // exported by 'default' or directly as CommonJS
+ * // function
+ * const subscriptions: any[] = await loadNatsListeners({
+ *   dir: __dirname + '/listeners',
+ *   filter: '.ts'
+ * })
  * ```
  *
  * @param {Nilable<ILoadNatsListenersOptions>} [options] Custom options.
@@ -141,15 +142,6 @@ export async function loadNatsListeners(options?: Nilable<ILoadNatsListenersOpti
  * ```
  * import { stan } from "@egomobile/nats"
  *
- * // scan all .ts files in 'listeners' sub folder
- * // and execute all exported functions, which are
- * // exported by 'default' or directly as CommonJS
- * // function
- * const subscriptions: any[] = loadNatsListenersSync({
- *   dir: __dirname + '/listeners',
- *   filter: '.ts'
- * })
- *
  * // connect to server
  * await stan.connect()
  *
@@ -158,6 +150,15 @@ export async function loadNatsListeners(options?: Nilable<ILoadNatsListenersOpti
  * //
  * // this is very useful in Kubernetes PODs
  * stan.exitOnClose()
+ *
+ * // scan all .ts files in 'listeners' sub folder
+ * // and execute all exported functions, which are
+ * // exported by 'default' or directly as CommonJS
+ * // function
+ * const subscriptions: any[] = loadNatsListenersSync({
+ *   dir: __dirname + '/listeners',
+ *   filter: '.ts'
+ * })
  * ```
  *
  * @param {Nilable<ILoadNatsListenersOptions>} [options] Custom options.
