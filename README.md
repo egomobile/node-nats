@@ -29,6 +29,15 @@ import { loadNatsListeners, stan } from "@egomobile/nats";
 let subscriptions: any[] | undefined;
 
 async function main() {
+  // connect to server
+  await stan.connect();
+
+  // close connection, when process exits
+  // --or-- exit process, when connection collapses
+  //
+  // this is very useful in Kubernetes PODs
+  stan.exitOnClose();
+
   // scan all .ts files in 'listeners' sub folder
   // and execute all exported functions, which are
   // exported by 'default' or directly as CommonJS
@@ -39,15 +48,6 @@ async function main() {
     dir: __dirname + "/listener",
     filter: ".ts",
   });
-
-  // connect to server
-  await stan.connect();
-
-  // close connection, when process exits
-  // --or-- exit process, when connection collapses
-  //
-  // this is very useful in Kubernetes PODs
-  stan.exitOnClose();
 }
 
 main().error(console.error);
@@ -68,12 +68,12 @@ interface IFooEvent {
   baz?: number;
 }
 
-export default async ({ name, stan }: ISetupNatsListenerActionArguments) => {
+export default async ({ client, name }: ISetupNatsListenerActionArguments) => {
   // name === 'foo_subject'
   // use it as subject for the listener
 
   const listener = new NatsListener<IFooEvent>(name, {
-    client: stan,
+    client,
   });
   listener.onMessage = async ({ message }) => {
     // handle 'message'

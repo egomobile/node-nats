@@ -1,5 +1,10 @@
 # Change Log (@egomobile/nats)
 
+## 0.3.0
+
+- made versions in `package.json` explicit
+- (bug-)fixes
+
 ## 0.2.2
 
 - add `loadNatsListeners()` and `loadNatsListenersSync()` functions
