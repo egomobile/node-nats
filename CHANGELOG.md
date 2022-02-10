@@ -1,5 +1,9 @@
 # Change Log (@egomobile/nats)
 
+## 0.4.0
+
+- add user and password to connection options
+
 ## 0.3.0
 
 - made versions in `package.json` explicit
