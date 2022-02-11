@@ -44,11 +44,11 @@ export interface INatsClientOptions {
     /**
      * The user to the NATS server.
      */
-    user: string | undefined;
+    user?: Nilable<string> | undefined;
     /**
      * The password to the NATS server.
      */
-    password: string | undefined;
+    password?: Nilable<string> | undefined;
 }
 
 /**
@@ -181,17 +181,11 @@ export class NatsClient {
                     throw new Error('No serverURL defined');
                 }
 
-                let opts: nats.StanOptions = {
-                    url: serverURL
+                const opts: nats.StanOptions = {
+                    url: serverURL,
+                    user: user ? user : undefined,
+                    pass: password ? password : undefined
                 };
-
-                if (user && password) {
-                    opts = {
-                        url: serverURL,
-                        user: user,
-                        pass: password
-                    };
-                }
 
                 const newClient = nats.connect(clusterId, clientId, opts);
 
