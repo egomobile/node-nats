@@ -41,6 +41,18 @@ export interface INatsClientOptions {
      * The URL to the NATS server.
      */
     serverURL: string;
+    /**
+     * The user to the NATS server.
+     */
+    user?: Nilable<string> | undefined;
+    /**
+     * The password to the NATS server.
+     */
+    password?: Nilable<string> | undefined;
+    /**
+     * The tls option for secured connections.
+     */
+    isTls?: Nilable<boolean> | undefined;
 }
 
 /**
@@ -55,6 +67,9 @@ export interface INatsClientOptions {
  * The following env vars are optional:
  *
  * - NATS_URL => serverURL (default: http://nats:4222)
+ * - NATS_USER => user for authentication
+ * - NATS_PASSWORD => password for authentication
+ * - NATS_TLS => connections via TLS
  *
  * @returns {INatsClientOptions} The options.
  */
@@ -62,11 +77,17 @@ export const defaultGetNatsClientOptions: GetNatsClientOptions = () => {
     const NATS_CLUSTER_ID = process.env.NATS_CLUSTER_ID!.trim();
     const NATS_URL = process.env.NATS_URL?.trim();
     const POD_NAME = process.env.POD_NAME!.trim();
+    const NATS_USER = process.env.NATS_USER?.trim();
+    const NATS_PASSWORD = process.env.NATS_PASSWORD?.trim();
+    const NATS_TLS = process.env.NATS_TLS?.trim();
 
     return {
         clientId: POD_NAME,
         clusterId: NATS_CLUSTER_ID,
-        serverURL: NATS_URL?.length ? NATS_URL : 'http://nats:4222'
+        serverURL: NATS_URL?.length ? NATS_URL : 'http://nats:4222',
+        user: NATS_USER?.length ? NATS_USER : undefined,
+        password: NATS_PASSWORD?.length ? NATS_PASSWORD : undefined,
+        isTls: NATS_TLS?.length ? Boolean(NATS_TLS) : undefined
     };
 };
 
@@ -155,7 +176,7 @@ export class NatsClient {
     public connect(): Promise<Stan> {
         return new Promise<Stan>(async (resolve, reject) => {
             try {
-                const { clientId, clusterId, serverURL } = this.getOptions();
+                const { clientId, clusterId, serverURL, user, password, isTls } = this.getOptions();
 
                 if (!clientId?.length) {
                     throw new Error('No clientId defined');
@@ -169,9 +190,14 @@ export class NatsClient {
                     throw new Error('No serverURL defined');
                 }
 
-                const newClient = nats.connect(clusterId, clientId, {
-                    url: serverURL
-                });
+                const opts: nats.StanOptions = {
+                    url: serverURL,
+                    user: user ? user : undefined,
+                    pass: password ? password : undefined,
+                    tls: isTls ? isTls : undefined
+                };
+
+                const newClient = nats.connect(clusterId, clientId, opts);
 
                 newClient.once('error', (err) => {
                     reject(err);
@@ -234,7 +260,7 @@ export class NatsClient {
     }
 
     /**
-     * The function, that return the options.
+     * The function, that returns the options.
      */
     public readonly getOptions: GetNatsClientOptions;
 
@@ -252,6 +278,4 @@ export class NatsClient {
  */
 export const stan = new NatsClient(defaultGetNatsClientOptions);
 
-export type {
-    Stan
-} from 'node-nats-streaming';
+export type { Stan } from 'node-nats-streaming';

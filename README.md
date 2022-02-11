@@ -25,6 +25,9 @@ import { loadNatsListeners, stan } from "@egomobile/nats";
 // POD_NAME => client ID
 // NATS_CLUSTER_ID => cluster ID
 // NATS_URL => (optional) URL to NATS server ... Default 'http://nats:4222'
+// NATS_USER => user for authentication
+// NATS_PASSWORD => password for authentication
+// NATS_TLS => connections via TLS
 
 let subscriptions: any[] | undefined;
 
