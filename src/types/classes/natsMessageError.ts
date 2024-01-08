@@ -21,6 +21,7 @@ import type { JsMsg } from "nats";
 export class NatsMessageError extends Error {
     /**
      * Initializes a new instance of that class.
+     *
      * @param {any} cause The inner error.
      * @param {JsMsg} msg The message that had thrown the error in `cause`.
      * @param {string} message The inner and additional message text, if needed.
