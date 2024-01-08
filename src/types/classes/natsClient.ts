@@ -36,6 +36,10 @@ export interface IExitOnCloseNatsOptions {
  */
 export interface INatsClientOptions {
     /**
+     * A custom `AbortController`.
+     */
+    abortController?: Nilable<AbortController>;
+    /**
      * Custom connection options or the function that receives it.
      */
     connectionOptions?: Nilable<GetterOrValue<ConnectionOptions>>;
@@ -68,7 +72,7 @@ export interface INatsClientOptions {
  * })
  *
  * const consumer = client.createConsumer<IFooMessage>()
- * await consumer.subscribe()
+ * consumer.subscribe()
  *
  * const publisher = client.createPublisher<IFooMessage>()
  * await publisher.publish({
@@ -77,6 +81,7 @@ export interface INatsClientOptions {
  * ```
  */
 export class NatsClient extends EventEmitter {
+    readonly #abortController: AbortController;
     #connection: Nilable<NatsConnection>;
     readonly #getConnectionOptions: () => Promise<ConnectionOptions>;
 
@@ -118,6 +123,8 @@ export class NatsClient extends EventEmitter {
                 };
             };
         }
+
+        this.#abortController = options?.abortController ?? new AbortController();
     }
 
     /**
@@ -176,7 +183,8 @@ export class NatsClient extends EventEmitter {
         return new NatsConsumer({
             ...options,
 
-            "client": this
+            "client": this,
+            "abortController": options.abortController ?? this.#abortController
         });
     }
 
@@ -280,6 +288,8 @@ export class NatsClient extends EventEmitter {
     }
 
     async #tryClose() {
+        this.#abortController.abort();
+
         try {
             await this.connection?.close();
         }

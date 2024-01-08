@@ -15,4 +15,5 @@
 
 export * from "./natsClient";
 export * from "./natsConsumer";
+export * from "./natsNessageError";
 export * from "./natsPublisher";

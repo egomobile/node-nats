@@ -24,6 +24,10 @@ import { NatsMessageError } from "./natsNessageError";
  */
 export interface INatsConsumerOptions {
     /**
+     * A custom `AbortController`.
+     */
+    abortController?: Nilable<AbortController>;
+    /**
      * The underlying client.
      */
     client: NatsClient;
@@ -65,6 +69,8 @@ function createAck(message: JsMsg) {
  * A NATS consumer.
  */
 export class NatsConsumer<T> extends EventEmitter {
+    readonly #abortController: AbortController;
+
     /**
      * Initializes a new instance of that class.
      *
@@ -72,6 +78,8 @@ export class NatsConsumer<T> extends EventEmitter {
      */
     constructor(public readonly options: INatsConsumerOptions) {
         super();
+
+        this.#abortController = options.abortController ?? new AbortController();
     }
 
     /**
@@ -169,10 +177,10 @@ export class NatsConsumer<T> extends EventEmitter {
             const messages = await consumer.consume();
 
             for await (const message of messages) {
-                if (
-                    signal?.aborted ||
-                    innerAbortController.signal.aborted
-                ) {
+                const isAborted = innerAbortController.signal.aborted ||
+                    this.#abortController.signal.aborted ||
+                    !!signal?.aborted;
+                if (isAborted) {
                     break;
                 }
 
