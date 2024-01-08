@@ -13,17 +13,23 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * A type that can be (null) or (undefined).
- */
-export type Nilable<T extends any = any> = Nullable<T> | Optional<T>;
+import type { JsMsg } from "nats";
 
 /**
- * A type that can also be (null).
+ * A NATS message error.
  */
-export type Nullable<T extends any = any> = T | null;
-
-/**
- * A type that can also be (undefined).
- */
-export type Optional<T extends any = any> = T | undefined;
+export class NatsMessageError extends Error {
+    /**
+     * Initializes a new instance of that class.
+     * @param {any} cause The inner error.
+     * @param {JsMsg} msg The message that had thrown the error in `cause`.
+     * @param {string} message The inner and additional message text, if needed.
+     */
+    constructor(
+        public readonly cause: any,
+        public readonly msg: JsMsg,
+        message?: string
+    ) {
+        super(message);
+    }
+}
