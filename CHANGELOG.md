@@ -1,5 +1,9 @@
 # Change Log (@egomobile/nats)
 
+## 0.5.0
+
+- **BREAKING CHANGE**: refactor to new [nats module](https://www.npmjs.com/package/nats)
+
 ## 0.4.0
 
 - add user and password to connection options

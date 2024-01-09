@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-export * from './NatsClient';
-export * from './NatsListener';
-export * from './NatsPublisher';
+export * from "./natsClient";
+export * from "./natsConsumer";
+export * from "./natsMessageError";
+export * from "./natsPublisher";

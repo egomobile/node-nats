@@ -13,17 +13,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * A type that can be (null) or (undefined).
- */
+export type GetterOrValue<T> = T | (() => T) | (() => PromiseLike<T>);
+
+export type Dispose<TResult = any> = () => TResult;
+
 export type Nilable<T extends any = any> = Nullable<T> | Optional<T>;
 
-/**
- * A type that can also be (null).
- */
 export type Nullable<T extends any = any> = T | null;
 
-/**
- * A type that can also be (undefined).
- */
 export type Optional<T extends any = any> = T | undefined;

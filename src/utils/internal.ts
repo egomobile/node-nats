@@ -13,4 +13,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-export * from "./types/classes";
+export function asAsync<TFunc extends Function = Function>(func: Function): TFunc {
+    if (func.constructor.name === "AsyncFunction") {
+        return func as TFunc;
+    }
+
+    return (async function (...args: any[]) {
+        return func(...args);
+    }) as any;
+}
