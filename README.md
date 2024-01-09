@@ -18,6 +18,7 @@ npm install --save @egomobile/nats
 
 ```typescript
 import {
+  INatsMessageConsumerContext,
   NatsClient,
   NatsMessageError
 } from "@egomobile/nats"
@@ -38,7 +39,17 @@ const client = NatsClient.open({
 const ac = new AbortController()
 
 const consumer = client.createConsumer<IFooMessage>()
-consumer.on("error", (error) => {
+consumer.on("message", (context: INatsMessageConsumerContext<IFooMessage>) => {
+  const {
+    ack,
+    message
+  } = context
+
+  // process `message` ...
+
+  // ack() is usually executed automatically
+})
+consumer.on("error", (error: any) => {
   if (error instanceof NatsMessageError) {
     // is happends if handling a message failed
     //

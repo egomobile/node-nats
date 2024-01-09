@@ -17,7 +17,8 @@ import { JSONCodec, JsMsg } from "nats";
 import { EventEmitter } from "node:events";
 import type { NatsClient } from "./natsClient";
 import type { Dispose, Nilable } from "../internal";
-import { NatsMessageError } from "./natsNessageError";
+import { NatsMessageError } from "./natsMessageError";
+import { asAsync } from "../../utils/internal";
 
 /**
  * Options for `NatsConsumer<T>` class.
@@ -32,6 +33,10 @@ export interface INatsConsumerOptions {
      */
     client: NatsClient;
     /**
+     * Should not do an automatic ACK in every message.
+     */
+    noAutoAck?: Nilable<boolean>;
+    /**
      * The name of the underlying stream.
      */
     streamName: string;
@@ -43,9 +48,12 @@ export interface INatsConsumerOptions {
 export interface INatsMessageConsumerContext<T> {
     /**
      * The function to call to ack a message.
-     * @returns
      */
     ack: () => void;
+    /**
+     * Do not ack a message automatically.
+     */
+    noAck: boolean;
     /**
      * The received message.
      */
@@ -62,6 +70,20 @@ export interface ISubscribeNatsConsumerOptions {
 function createAck(message: JsMsg) {
     return () => {
         message.ack();
+    };
+}
+
+function createMessageCallback<T>(func: (...args: any[]) => any): (context: INatsMessageConsumerContext<T>) => Promise<any> {
+    func = asAsync(func);
+
+    return async (context: INatsMessageConsumerContext<any>) => {
+        const result = await func(context);
+
+        if (!context.noAck) {
+            context.ack();
+        }
+
+        return result;
     };
 }
 
@@ -89,6 +111,49 @@ export class NatsConsumer<T> extends EventEmitter {
      */
     get client(): NatsClient {
         return this.options.client;
+    }
+
+    /**
+     * Gets if there should be no auto ACK.
+     *
+     * @returns {boolean} Value indicating that there is no auto ACK.
+     */
+    get noAutoAck(): boolean {
+        return !!this.options.noAutoAck;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    on(eventName: "error", func: (error: any) => any): this;
+    on(eventName: "message", func: (context: INatsMessageConsumerContext<T>) => any): this;
+    on(eventName: string | symbol, func: (...args: any[]) => any): this {
+        let funcToUse = func;
+
+        if (eventName === "message") {
+            // wrap it to an async function with
+            // automatic call of ack(), if defined
+            funcToUse = createMessageCallback<T>(func);
+        }
+
+        return super.on(eventName, funcToUse);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    once(eventName: "error", func: (error: any) => any): this;
+    once(eventName: "message", func: (context: INatsMessageConsumerContext<T>) => any): this;
+    once(eventName: string | symbol, func: (...args: any[]) => any): this {
+        let funcToUse = func;
+
+        if (eventName === "message") {
+            // wrap it to an async function with
+            // automatic call of ack(), if defined
+            funcToUse = createMessageCallback<T>(func);
+        }
+
+        return super.once(eventName, funcToUse);
     }
 
     /**
@@ -187,6 +252,7 @@ export class NatsConsumer<T> extends EventEmitter {
                 try {
                     const context: INatsMessageConsumerContext<T> = {
                         "ack": createAck(message),
+                        "noAck": this.noAutoAck,
                         "message": jc.decode(message.data) as T
                     };
 
