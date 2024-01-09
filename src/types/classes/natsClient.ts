@@ -20,6 +20,16 @@ import { INatsPublisherOptions, NatsPublisher } from "./natsPublisher";
 import { INatsConsumerOptions, NatsConsumer } from "./natsConsumer";
 
 /**
+ * Options for `NatsClient.createConsumer()` method.
+ */
+export type CreateNatsConsumerOptions = Omit<INatsConsumerOptions, "client">;
+
+/**
+ * Options for `NatsClient.createPublisher()` method.
+ */
+export type CreateNatsPublisherOptions = Omit<INatsPublisherOptions, "client">;
+
+/**
  * Options for `NatsClient.exitOnClode()` method.
  */
 export interface IExitOnCloseNatsOptions {
@@ -71,10 +81,10 @@ export interface INatsClientOptions {
  *   "name": process.env.POD_NAME!.trim()
  * })
  *
- * const consumer = client.createConsumer<IFooMessage>({ "streamName": "foo-stream" })
+ * const consumer = client.createConsumer<IFooMessage>("foo-stream-name")
  * consumer.subscribe()
  *
- * const publisher = client.createPublisher<IFooMessage>({ "streamName": "foo-stream" })
+ * const publisher = client.createPublisher<IFooMessage>("foo-stream-name")
  * await publisher.publish({
  *   "bar": 42
  * })
@@ -175,11 +185,24 @@ export class NatsClient extends EventEmitter {
     /**
      * Creates a new consumer instance based on this client.
      *
-     * @param {Omit<INatsConsumerOptions,"client">} options The options.
+     * @param {CreateNatsConsumerOptions} options The options.
+     * @param {string} streamName The name of the stream.
      *
      * @returns {NatsConsumer<T>} The consumer.
      */
-    createConsumer<T>(options: Omit<INatsConsumerOptions, "client">): NatsConsumer<T> {
+    createConsumer<T>(streamName: string): NatsConsumer<T>;
+    createConsumer<T>(options: CreateNatsConsumerOptions): NatsConsumer<T>;
+    createConsumer<T>(optionsOrStreamName: string | CreateNatsConsumerOptions): NatsConsumer<T> {
+        let options: CreateNatsConsumerOptions;
+        if (typeof optionsOrStreamName === "string") {
+            options = {
+                "streamName": optionsOrStreamName
+            };
+        }
+        else {
+            options = optionsOrStreamName;
+        }
+
         return new NatsConsumer({
             ...options,
 
@@ -191,11 +214,24 @@ export class NatsClient extends EventEmitter {
     /**
      * Creates a new publisher instance based on this client.
      *
-     * @param {Omit<INatsPublisherOptions,"client">} options The options.
+     * @param {CreateNatsPublisherOptions} options The options.
+     * @param {string} streamName The name of the stream.
      *
      * @returns {NatsPublisher<T>} The publisher.
      */
-    createPublisher<T>(options: Omit<INatsPublisherOptions, "client">): NatsPublisher<T> {
+    createPublisher<T>(streamName: string): NatsPublisher<T>;
+    createPublisher<T>(options: CreateNatsPublisherOptions): NatsPublisher<T>;
+    createPublisher<T>(optionsOrStreamName: string | CreateNatsPublisherOptions): NatsPublisher<T> {
+        let options: CreateNatsPublisherOptions;
+        if (typeof optionsOrStreamName === "string") {
+            options = {
+                "streamName": optionsOrStreamName
+            };
+        }
+        else {
+            options = optionsOrStreamName;
+        }
+
         return new NatsPublisher({
             ...options,
 
