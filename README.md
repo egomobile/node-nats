@@ -38,7 +38,7 @@ const client = NatsClient.open({
 // https://developer.mozilla.org/en-US/docs/Web/API/AbortController
 const ac = new AbortController()
 
-const consumer = client.createConsumer<IFooMessage>()
+const consumer = client.createConsumer<IFooMessage>({ "streamName": "foo-stream" })
 consumer.on("message", (context: INatsMessageConsumerContext<IFooMessage>) => {
   const {
     ack,
@@ -65,7 +65,7 @@ const disposeSubscription = consumer.subscribe({
   signal: ac.signal
 })
 
-const publisher = client.createPublisher<IFooMessage>()
+const publisher = client.createPublisher<IFooMessage>({ "streamName": "foo-stream" })
 await publisher.publish({
   "bar": 42
 })

@@ -197,10 +197,10 @@ export class NatsConsumer<T> extends EventEmitter {
      * // make it lter possible to abort
      * const ac = new AbortController()
      *
-     * const consumer = client.createConsumer<IFooMessage>()
+     * const consumer = client.createConsumer<IFooMessage>({ "streamName": "foo-stream" })
      * const disposeSubscription = consumer.subscribe({ signal: ac.signal })
      *
-     * const publisher = client.createPublisher<IFooMessage>()
+     * const publisher = client.createPublisher<IFooMessage>({ "streamName": "foo-stream" })
      * await publisher.publish({
      *   "bar": 42
      * })

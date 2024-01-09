@@ -80,10 +80,10 @@ export class NatsPublisher<T> extends EventEmitter {
      *   "name": process.env.POD_NAME!.trim()
      * })
      *
-     * const consumer = client.createConsumer<IFooMessage>()
+     * const consumer = client.createConsumer<IFooMessage>({ "streamName": "foo-stream" })
      * consumer.subscribe()
      *
-     * const publisher = client.createPublisher<IFooMessage>()
+     * const publisher = client.createPublisher<IFooMessage>({ "streamName": "foo-stream" })
      * await publisher.publish({
      *   "bar": 42
      * })
